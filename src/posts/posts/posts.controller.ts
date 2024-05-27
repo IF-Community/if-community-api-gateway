@@ -1,13 +1,18 @@
 import { BadRequestException, Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { postsRequest } from 'src/requests.config';
 import { PostRequest } from '../dto/posts.dto';
+import { handleError } from '../utils/handleError';
 
 @Controller('posts')
 export class PostsController {
     @Post()
     async createPost(@Body() postData: PostRequest) {
-        const response = await postsRequest.post('/posts', postData);
-        return response.data;
+        try {
+            const response = await postsRequest.post('/posts', postData);
+            return response.data;
+        } catch(error) {
+            handleError(error);
+        }
     }
 
     @Get()
@@ -16,25 +21,38 @@ export class PostsController {
         @Query('pageSize') pageSize: number = 10,
         @Query('popularity') popularity: boolean = false,
     ) {
-        const response = await postsRequest.get(`/posts?pageNumber=${pageNumber}&pageSize=${pageSize}&popularity=${popularity}`);
-        return response.data;
+        try {
+            const response = await postsRequest.get(`/posts?pageNumber=${pageNumber}&pageSize=${pageSize}&popularity=${popularity}`);
+            return response.data;
+        } catch(error) {
+            handleError(error);
+        }
     }
 
     @Get('categories')
     async getPostsByCategories(@Query('tags') tags: string) {
 
-        if (!tags) {
-            throw new BadRequestException('Você precisa informar a query com a string de valores separados por ,');
+        try {
+            if (!tags) {
+                throw new BadRequestException('Você precisa informar a query com a string de valores separados por ,');
+            }
+    
+            const response = await postsRequest.get('/posts/categories', { params: { tags } });
+            return response.data;
+        } catch(error) {
+            handleError(error);
         }
 
-        const response = await postsRequest.get('/posts/categories', { params: { tags } });
-        return response.data;
     }
 
     @Get(':id')
     async getPostById(@Param('id') id: number) {
-        const response = await postsRequest.get(`/posts/${id}`);
-        return response.data;
+        try {
+            const response = await postsRequest.get(`/posts/${id}`);
+            return response.data;
+        } catch(error) {
+            handleError(error);
+        }
     }
 
     @Get('users/:id')
@@ -43,8 +61,12 @@ export class PostsController {
         @Query('pageNumber') pageNumber: number = 1,
         @Query('pageSize') pageSize: number = 10,
     ) {
-        const response = await postsRequest.get(`/posts/users/${id}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-        return response.data;
+        try {
+            const response = await postsRequest.get(`/posts/users/${id}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+            return response.data;
+        } catch(error) {
+            handleError(error);
+        }
     }
 
     @Get('search/:search')
@@ -53,19 +75,31 @@ export class PostsController {
         @Query('pageNumber') pageNumber: number = 1,
         @Query('pageSize') pageSize: number = 10,
     ) {
-        const response = await postsRequest.get(`/posts/search/${search}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-        return response.data;
+        try {
+            const response = await postsRequest.get(`/posts/search/${search}?pageNumber=${pageNumber}&pageSize=${pageSize}`);
+            return response.data;
+        } catch(error) {
+            handleError(error);
+        }
     }
 
     @Patch(':id')
     async updatePost(@Param('id') id: number, @Body() postData: Partial<PostRequest>) {
-        const response = await postsRequest.patch(`/posts/${id}`, postData);
-        return response.data;
+        try {
+            const response = await postsRequest.patch(`/posts/${id}`, postData);
+            return response.data;
+        } catch(error) {
+            handleError(error);
+        }
     }
 
     @Delete(':id')
     async deletePost(@Param('id') id: number) {
-        const response = await postsRequest.delete(`/posts/${id}`);
-        return response.data;
+        try {
+            const response = await postsRequest.delete(`/posts/${id}`);
+            return response.data;
+        } catch(error) {
+            handleError(error);
+        }
     }
 }
