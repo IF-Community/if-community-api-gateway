@@ -1,14 +1,39 @@
-import { Controller, Get, Req, Res } from '@nestjs/common';
+import {
+  All,
+  Controller,
+  HttpException,
+  HttpStatus,
+  Req,
+  Res,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
-import axios from 'axios';
 import { commentRequest } from 'src/requests.config';
 
 @Controller()
 export class GatewayController {
-  @Get('comments')
+  @All('comments*')
   async proxy(@Req() req: Request, @Res() res: Response) {
 
-    const axiosResponse = await commentRequest.get('comments/')
-    return res.send(axiosResponse.data);
+    const requestUrlFrom = req.url.match(/(comments\/.*)/)[1]
+
+    try {
+      const data = await commentRequest.request(
+        { 
+          method: req.method,
+          url: requestUrlFrom
+        },
+      );
+      res.status(data.status).json(data.data);
+  
+    } catch (error) {
+      if (error.response) {
+        res.status(error.response.status).json(error.response.data);
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
   }
 }
