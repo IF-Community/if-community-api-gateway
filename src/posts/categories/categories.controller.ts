@@ -1,60 +1,34 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { All, Controller, Req, Res } from '@nestjs/common';
 import { postsRequest } from 'src/requests.config';
-import { CategoriesDto } from '../dto/categorie.dto';
-import { handleError } from 'src/posts/utils/handleError';
+import { Request, Response } from 'express';
+import { handleError } from '../utils/handleError';
 
-@Controller('categories')
+@Controller()
 export class CategoriesController {
-    @Post()
-    async createCategory(@Body() categoryData: CategoriesDto) {
-        try{
-            const response = await postsRequest.post('/categories', categoryData);
-            return response.data;
-        } catch(error) {
-            handleError(error);
-        }
+  @All('categories*')
+  async categoriesGetway(@Req() req: Request, @Res() res: Response) {
+
+    let requestUrlFrom: string;
+    try {
+      requestUrlFrom = req.path.match(/(categories\/.*)/)[1];
+    } catch(_){
+      requestUrlFrom = "categories";
     }
 
-    @Get()
-    async getCategories(
-        @Query('pageNumber') pageNumber: number = 1,
-        @Query('pageSize') pageSize: number = 10,
-    ) {
-        try{
-            const response = await postsRequest.get(`/categories?pageNumber=${pageNumber}&pageSize=${pageSize}`);
-            return response.data;
-        } catch(error) {
-            handleError(error);
+    try {
+      const data = await postsRequest.request(
+        { 
+          method: req.method,
+          url: requestUrlFrom,
+          data: req.body,
+          params: req.query,
         }
+      );
+      
+      res.status(data.status).json(data.data);
+  
+    } catch (error) {
+      handleError(error);
     }
-
-    @Get(':id')
-    async getCategoryById(@Param('id') id: number) {
-        try{
-            const response = await postsRequest.get(`/categories/${id}`);
-            return response.data;
-        } catch(error) {
-            handleError(error);
-        }
-    }
-
-    @Patch(':id')
-    async updateCategory(@Param('id') id: number, @Body() categoryData: Partial<CategoriesDto>) {
-        try {
-            const response = await postsRequest.patch(`/categories/${id}`, categoryData);
-            return response.data;
-        } catch(error) {
-            handleError(error);
-        }
-    }
-
-    @Delete(':id')
-    async deleteCategory(@Param('id') id: number) {
-        try {
-            const response = await postsRequest.delete(`/categories/${id}`);
-            return response.data;
-        } catch(error) {
-            handleError(error);
-        }
-    }
+  }
 }
