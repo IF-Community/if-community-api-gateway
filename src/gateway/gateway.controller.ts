@@ -14,14 +14,20 @@ export class GatewayController {
   @All('comments*')
   async proxy(@Req() req: Request, @Res() res: Response) {
 
-    const requestUrlFrom = req.url.match(/(comments\/.*)/)[1]
+    let requestUrlFrom
+    try {
+      requestUrlFrom = req.url.match(/(comments\/.*)/)[1]
+    } catch(_){
+      requestUrlFrom = "comments"
+    }
 
     try {
       const data = await commentRequest.request(
         { 
           method: req.method,
-          url: requestUrlFrom
-        },
+          url: requestUrlFrom,
+          data: req.body
+        }
       );
       res.status(data.status).json(data.data);
   
