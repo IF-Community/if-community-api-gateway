@@ -21,6 +21,6 @@ export const accountsRequest = axios.create({
 })
 
 export const profilesRequest = axios.create({
-    baseURL: 'http://localhost:3005/api/v1/',
+    baseURL: 'http://localhost:3004/api/v1/',
     headers: {'Authorization': 'Api-Key <API_KEY>'}
 })
