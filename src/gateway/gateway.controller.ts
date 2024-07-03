@@ -7,7 +7,7 @@ import {
   Res,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { commentRequest } from 'src/requests.config';
+import { commentRequest, accountsRequest, profilesRequest, notificationsRequest } from 'src/requests.config';
 
 @Controller()
 export class GatewayController {
@@ -23,6 +23,99 @@ export class GatewayController {
 
     try {
       const data = await commentRequest.request(
+        { 
+          method: req.method,
+          url: requestUrlFrom,
+          data: req.body
+        }
+      );
+      res.status(data.status).json(data.data);
+  
+    } catch (error) {
+      if (error.response) {
+        res.status(error.response.status).json(error.response.data);
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+  @All('accounts*')
+  async accountsProxy(@Req() req: Request, @Res() res: Response) {
+
+    let requestUrlFrom
+    try {
+      requestUrlFrom = req.url.match(/(accounts\/.*)/)[1]
+    } catch(_){
+      requestUrlFrom = "accounts"
+    }
+
+    try {
+      const data = await accountsRequest.request(
+        { 
+          method: req.method,
+          url: requestUrlFrom,
+          data: req.body
+        }
+      );
+      res.status(data.status).json(data.data);
+  
+    } catch (error) {
+      if (error.response) {
+        res.status(error.response.status).json(error.response.data);
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+  @All('profiles*')
+  async profilesProxy(@Req() req: Request, @Res() res: Response) {
+
+    let requestUrlFrom
+    try {
+      requestUrlFrom = req.url.match(/(profiles\/.*)/)[1]
+    } catch(_){
+      requestUrlFrom = "profiles"
+    }
+
+    try {
+      const data = await profilesRequest.request(
+        { 
+          method: req.method,
+          url: requestUrlFrom,
+          data: req.body
+        }
+      );
+      res.status(data.status).json(data.data);
+  
+    } catch (error) {
+      if (error.response) {
+        res.status(error.response.status).json(error.response.data);
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    }
+  }
+  @All('notifications*')
+  async notificationsProxy(@Req() req: Request, @Res() res: Response) {
+
+    let requestUrlFrom
+    try {
+      requestUrlFrom = req.url.match(/(notifications\/.*)/)[1]
+    } catch(_){
+      requestUrlFrom = "notifications"
+    }
+
+    try {
+      const data = await notificationsRequest.request(
         { 
           method: req.method,
           url: requestUrlFrom,
