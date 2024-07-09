@@ -5,9 +5,11 @@ import {
   HttpStatus,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { commentRequest, accountsRequest, profilesRequest, notificationsRequest } from 'src/requests.config';
+import { CheckUserLogin } from './gateway.service';
 
 @Controller()
 export class GatewayController {
@@ -42,6 +44,7 @@ export class GatewayController {
       }
     }
   }
+  @UseGuards(CheckUserLogin)
   @All('accounts*')
   async accountsProxy(@Req() req: Request, @Res() res: Response) {
 

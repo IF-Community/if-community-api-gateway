@@ -17,10 +17,10 @@ export const notificationsRequest = axios.create({
 
 export const accountsRequest = axios.create({
     baseURL: 'http://localhost:3004/api/v1/',
-    headers: {'Authorization': 'Api-Key <API_KEY>'}
+    headers: {'Authorization': 'Api-Key rZsMVR0Z.7VUA7ZX6cq8VZm0IjJAeT9A0onCVl4ML'}
 })
 
 export const profilesRequest = axios.create({
     baseURL: 'http://localhost:3004/api/v1/',
-    headers: {'Authorization': 'Api-Key <API_KEY>'}
+    headers: {'Authorization': 'Api-Key rZsMVR0Z.7VUA7ZX6cq8VZm0IjJAeT9A0onCVl4ML'}
 })
