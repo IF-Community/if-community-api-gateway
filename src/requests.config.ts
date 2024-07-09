@@ -10,12 +10,17 @@ export const commentRequest = axios.create({
 //     headers: {'api-key': ''}
 // })
 
-// export const notificationsRequest = axios.create({
-//     baseURL: 'http://localhost:3003',
-//     headers: {'api-key': ''}
-// })
+export const notificationsRequest = axios.create({
+    baseURL: 'http://localhost:3003/api/v1/',
+    headers: {'Authorization': 'Api-Key <API_KEY>'}
+})
 
-// export const usersRequest = axios.create({
-//     baseURL: 'http://localhost:3004',
-//     headers: {'api-key': ''}
-// })
+export const accountsRequest = axios.create({
+    baseURL: 'http://localhost:3004/api/v1/',
+    headers: {'Authorization': 'Api-Key <API_KEY>'}
+})
+
+export const profilesRequest = axios.create({
+    baseURL: 'http://localhost:3004/api/v1/',
+    headers: {'Authorization': 'Api-Key <API_KEY>'}
+})
