@@ -8,8 +8,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { commentRequest, accountsRequest, profilesRequest, notificationsRequest } from 'src/requests.config';
+import { 
+  commentRequest, 
+  accountsRequest, 
+  profilesRequest, 
+  notificationsRequest,
+  postsRequest,
+
+} from 'src/requests.config';
 import { CheckUserLogin } from './gateway.service';
+import { handleError } from 'src/utils/handleError';
 
 @Controller()
 export class GatewayController {
@@ -136,6 +144,32 @@ export class GatewayController {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
+    }
+  }
+  @All('posts*')
+  async postProxy(@Req() req: Request, @Res() res: Response) {
+
+    let requestUrlFrom: string;
+    try {
+        requestUrlFrom = req.path.match(/(posts\/.*)/)[1];
+    } catch(_){
+      requestUrlFrom = "posts";
+    }
+
+    try {
+      const data = await postsRequest.request(
+        { 
+          method: req.method,
+          url: requestUrlFrom,
+          data: req.body,
+          params: req.query,
+        }
+      );
+      
+      res.status(data.status).json(data.data);
+  
+    } catch (error) {
+      handleError(error);
     }
   }
 }
